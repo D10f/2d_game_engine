@@ -4,7 +4,7 @@ CXX      = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Wfatal-errors
 TARGET   = game
 SRCDIRS  = ./src
-INCDIRS  = ./include ./lib/glm ./lib/lua ./lib/imgui ./lib/sol
+INCDIRS  = ./include ./lib
 LIBS     = lua5.4 SDL2 SDL2_image SDL2_mixer SDL2_ttf
 
 SOURCES  = $(foreach D,$(SRCDIRS),$(wildcard $(D)/*.cpp))
