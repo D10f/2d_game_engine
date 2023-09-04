@@ -1,0 +1,11 @@
+*.out
+*.zip
+*.tar*
+.DS_Store
+.cache/
+build/
+env/
+compile_commands.json
+compile_flags.txt
+game
+
