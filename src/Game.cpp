@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include "Logger.hpp"
 #include "glm/fwd.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -14,7 +15,7 @@ Game::Game() : m_isRunning(false), m_window(nullptr), m_renderer(nullptr), m_win
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
-        std::cerr << SDL_GetError() << std::endl;
+        Logger::error(SDL_GetError());
         return;
     }
 
@@ -29,7 +30,7 @@ Game::Game() : m_isRunning(false), m_window(nullptr), m_renderer(nullptr), m_win
 
     if (m_window == nullptr)
     {
-        std::cerr << SDL_GetError() << std::endl;
+        Logger::error(SDL_GetError());
         SDL_Quit();
         return;
     }
@@ -38,7 +39,7 @@ Game::Game() : m_isRunning(false), m_window(nullptr), m_renderer(nullptr), m_win
 
     if (m_renderer == nullptr)
     {
-        std::cerr << SDL_GetError() << std::endl;
+        Logger::error(SDL_GetError());
         SDL_DestroyWindow(m_window);
         SDL_Quit();
         return;
@@ -54,7 +55,7 @@ Game::Game() : m_isRunning(false), m_window(nullptr), m_renderer(nullptr), m_win
 
 Game::~Game()
 {
-    std::cout << "Destructor called" << std::endl;
+    Logger::log("Destructor called");
     SDL_DestroyRenderer(m_renderer);
     SDL_DestroyWindow(m_window);
     SDL_Quit();
