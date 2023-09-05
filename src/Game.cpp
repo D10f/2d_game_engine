@@ -1,8 +1,14 @@
 #include "Game.hpp"
+#include "glm/fwd.hpp"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <SDL2/SDL_render.h>
-#include <SDL2/SDL_video.h>
+#include <SDL2/SDL_timer.h>
+#include <glm/glm.hpp>
 #include <iostream>
+
+glm::vec2 playerPos = {10.0, 20.0};
+glm::vec2 playerVel = {100.0, 0.0};
 
 Game::Game() : m_isRunning(false), m_window(nullptr), m_renderer(nullptr), m_windowWidth(960), m_windowHeight(540)
 {
@@ -13,9 +19,8 @@ Game::Game() : m_isRunning(false), m_window(nullptr), m_renderer(nullptr), m_win
     }
 
     // Use this to properly set display window at fullscreen.
-    // Note the call to SDL_SetWindowFullscreen below.
-    SDL_DisplayMode displayMode;
-    SDL_GetCurrentDisplayMode(0, &displayMode);
+    /* SDL_DisplayMode displayMode; */
+    /* SDL_GetCurrentDisplayMode(0, &displayMode); */
     /* m_windowWidth = displayMode.w; */
     /* m_windowHeight = displayMode.h; */
 
@@ -39,8 +44,12 @@ Game::Game() : m_isRunning(false), m_window(nullptr), m_renderer(nullptr), m_win
         return;
     }
 
+    // We can also force fullscreen window but scaling down the dimensions to a set width and height.
+    // For that use a combination of SDL_SetWindowFullscreen and SDL_RenderSetLogicalSize.
+    SDL_DisplayMode displayMode;
+    SDL_GetCurrentDisplayMode(0, &displayMode);
     SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-    /* SDL_RenderSetLogicalSize(m_renderer, static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight)); */
+    SDL_RenderSetLogicalSize(m_renderer, static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight));
 }
 
 Game::~Game()
@@ -87,11 +96,41 @@ void Game::processInput()
 
 void Game::render()
 {
-    SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
+    SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
     SDL_RenderClear(m_renderer);
+
+    // Draw PNG texture
+    SDL_Surface *surface = IMG_Load("assets/images/tank-tiger-right.png");
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(m_renderer, surface);
+    SDL_FreeSurface(surface);
+
+    SDL_Rect dst = {static_cast<int>(playerPos.x), static_cast<int>(playerPos.y), 32, 32};
+
+    SDL_RenderCopy(m_renderer, texture, nullptr, &dst);
+    SDL_DestroyTexture(texture);
+
     SDL_RenderPresent(m_renderer);
 }
 
 void Game::update()
 {
+    // number of milliseconds since the SDL library initialized
+    uint32_t currentFrameTicks = SDL_GetTicks();
+
+    // Check if an artifical delay is required to paint at desired frame rate.
+    uint32_t timeToWait = TARGET_FRAME_TIME - (currentFrameTicks - m_ticksLastFrame);
+
+    if (timeToWait > 0 && timeToWait < TARGET_FRAME_TIME)
+        SDL_Delay(timeToWait);
+
+    // Difference in ticks since last frame, in seconds
+    float deltaTime = static_cast<float>((currentFrameTicks - m_ticksLastFrame)) / 1000.0F;
+
+    // Contrain delta_time to a max value, and save variable
+    /* delta_time = (delta_time > 0.05f) ? 0.05f : delta_time; */
+
+    m_ticksLastFrame = currentFrameTicks;
+
+    playerPos.x += playerVel.x * deltaTime;
+    playerPos.y += playerVel.y * deltaTime;
 }
