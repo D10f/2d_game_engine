@@ -1,4 +1,4 @@
-#include "Logger.hpp"
+#include "Logger/Logger.hpp"
 #include <iomanip>
 
 const std::string RED = "\033[31m";

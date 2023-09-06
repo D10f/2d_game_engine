@@ -1,5 +1,5 @@
-#include "Game.hpp"
-#include "Logger.hpp"
+#include "Game/Game.hpp"
+#include "Logger/Logger.hpp"
 #include "glm/fwd.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
