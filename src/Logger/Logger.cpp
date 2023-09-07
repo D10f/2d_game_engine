@@ -4,6 +4,7 @@
 const std::string RED = "\033[31m";
 const std::string GREEN = "\033[32m";
 const std::string YELLOW = "\033[33m";
+const std::string BLUE = "\033[34m";
 const std::string RESET = "\033[0m";
 
 const std::string ISO8601_UTC_DATE_TIME = "%Y-%m-%dT%H:%M:%SZ";
@@ -20,7 +21,7 @@ void printMessage(const LogEntry &entry, int justify = 5)
     switch (entry.type)
     {
     case LOG_INFO:
-        std::cout << GREEN << std::left << std::setw(justify) << "LOG";
+        std::cout << BLUE << std::left << std::setw(justify) << "LOG";
         break;
     case LOG_WARN:
         std::cout << YELLOW << std::left << std::setw(justify) << "WARN";
@@ -30,8 +31,7 @@ void printMessage(const LogEntry &entry, int justify = 5)
         break;
     }
 
-    std::cout << " | ";
-    std::cout << std::put_time(&entry.timestamp, ISO8601_UTC_DATE_TIME.c_str()) << " - ";
+    std::cout << " | " << std::put_time(&entry.timestamp, ISO8601_UTC_DATE_TIME.c_str()) << " - ";
     std::cout << entry.message << std::endl;
     std::cout << RESET;
 }

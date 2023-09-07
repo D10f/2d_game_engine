@@ -1,15 +1,11 @@
 #include "Game/Game.hpp"
 #include "Logger/Logger.hpp"
-#include "glm/fwd.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
 #include <glm/glm.hpp>
 #include <iostream>
-
-glm::vec2 playerPos = {10.0, 20.0};
-glm::vec2 playerVel = {100.0, 0.0};
 
 Game::Game() : m_isRunning(false), m_window(nullptr), m_renderer(nullptr), m_windowWidth(960), m_windowHeight(540)
 {
@@ -105,9 +101,6 @@ void Game::render()
     SDL_Texture *texture = SDL_CreateTextureFromSurface(m_renderer, surface);
     SDL_FreeSurface(surface);
 
-    SDL_Rect dst = {static_cast<int>(playerPos.x), static_cast<int>(playerPos.y), 32, 32};
-
-    SDL_RenderCopy(m_renderer, texture, nullptr, &dst);
     SDL_DestroyTexture(texture);
 
     SDL_RenderPresent(m_renderer);
@@ -131,7 +124,4 @@ void Game::update()
     /* delta_time = (delta_time > 0.05f) ? 0.05f : delta_time; */
 
     m_ticksLastFrame = currentFrameTicks;
-
-    playerPos.x += playerVel.x * deltaTime;
-    playerPos.y += playerVel.y * deltaTime;
 }
