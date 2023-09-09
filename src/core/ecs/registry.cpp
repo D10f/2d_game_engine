@@ -15,6 +15,25 @@ Entity Registry::createEntity()
 
 void Registry::addEntityToSystem(Entity entity)
 {
+    const auto entityId = entity.getId();
+    const auto &entityComponentsSignature = m_componentSignatures[entityId];
+
+    for (const auto &system : m_systems)
+    {
+        const auto systemComponentSignature = system.second->getComponentSignature();
+
+        if ((entityComponentsSignature & systemComponentSignature) == systemComponentSignature)
+            system.second->addEntity(entity);
+
+        /**
+         *  the std::bitset has an == operator that compares all individual bits of both bitsets, but we only want to
+         *  check if the bits from the entity signature match the ones from system signature, which would indicate that
+         *  the system should handle this entity:
+         *
+         *  if (entityComponentsSignature == systemComponentSignature)
+         *  system.second->addEntity(entity);
+         */
+    }
 }
 
 void Registry::update()
