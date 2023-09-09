@@ -8,12 +8,12 @@
 
 const size_t MAX_COMPONENTS = 32;
 
-using signature = std::bitset<MAX_COMPONENTS>;
+using Signature = std::bitset<MAX_COMPONENTS>;
 
 class System
 {
   private:
-    signature m_componentSignature;
+    Signature m_componentSignature;
     std::vector<Entity> m_entities;
 
   public:
@@ -23,7 +23,7 @@ class System
     void addEntity(const Entity &entity);
     void removeEntity(const Entity &entity);
     [[nodiscard]] std::vector<Entity> &getEntities() const;
-    [[nodiscard]] signature &getComponentSignature() const;
+    [[nodiscard]] Signature &getComponentSignature() const;
     template <typename TComponent> void requireComponent();
 };
 
