@@ -29,7 +29,7 @@ std::vector<Entity> &System::getEntities() const
     return *m_entities;
 }
 
-signature &System::getComponentSignature() const
+Signature &System::getComponentSignature() const
 {
     return *m_componentSignature;
 }

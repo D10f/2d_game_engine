@@ -3,11 +3,15 @@
 
 #include "glm/glm.hpp"
 
-struct TransformComponent
+class TransformComponent
 {
-    glm::vec2 position;
-    glm::vec2 scale;
-    double rotation;
+  public:
+    glm::vec2 m_position;
+    glm::vec2 m_scale;
+    double m_rotation;
+
+    TransformComponent(glm::vec2 position, glm::vec2 scale, double rotation)
+        : m_position(position), m_scale(scale), m_rotation(rotation){};
 };
 
 #endif

@@ -1,14 +1,17 @@
 #ifndef _CORE_REGISTRY_H
 #define _CORE_REGISTRY_H
 
+#include "Components/TransformComponent.hpp"
 #include "Logger/Logger.hpp"
 #include "core/System/System.hpp"
 #include "core/ecs/component.hpp"
 #include "utils/pool.h"
 #include <cstdint>
+#include <memory>
 #include <set>
 #include <typeindex>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 class Registry
@@ -53,7 +56,17 @@ class Registry
 
     template <typename T, typename... TArgs> void addComponent(Entity entity, TArgs &&...args);
 
+    template <typename T> void removeComponent(Entity entity);
+
+    template <typename T> bool hasComponent(Entity entity) const;
+
     IComponent &getComponent(Entity entity) const;
+
+    template <typename T, typename... TArgs> System &addSystem(TArgs... args);
+    template <typename T> void removeSystem();
+    template <typename T> bool hasSystem() const;
+    template <typename T> T &getSystem() const;
+
     System addSystem();
     void addEntityToSystem(Entity entity);
 };
@@ -67,16 +80,6 @@ template <typename T, typename... TArgs> void Registry::addComponent(Entity enti
     // Check if the component id is greater than the current size of component pools.
     if (componentId >= m_componentPools.size())
         m_componentPools.resize(componentId + 1, nullptr);
-
-    // If a component pool does not exist for this component type.
-    /* if (!m_componentPools[componentId]) */
-    /* { */
-    /*     auto *newComponentPool = new Pool<T>(); */
-    /*     m_componentPools[componentId] = newComponentPool; */
-    /* } */
-
-    /* // Extract the pool for the current compnent type. */
-    /* auto *componentPool = m_componentPools[componentId]; */
 
     if (!m_componentPools[componentId])
         m_componentPools[componentId] = componentPool;
@@ -92,7 +95,47 @@ template <typename T, typename... TArgs> void Registry::addComponent(Entity enti
     componentPool->set(entityId, newComponent);
 
     // Update the entity's component signature.
-    m_componentSignatures[entityId].set(componentId);
+    m_componentSignatures[entityId].set(componentId, true);
+}
+
+template <typename T> void Registry::removeComponent(Entity entity)
+{
+    const auto componentId = Component<T>::getId();
+    const auto entityId = entity.getId();
+    m_componentSignatures[entityId].set(componentId, false);
+}
+
+template <typename T> bool Registry::hasComponent(Entity entity) const
+{
+    const auto componentId = Component<T>::getId();
+    const auto entityId = entity.getId();
+    return m_componentSignatures[entityId].test(componentId);
+}
+
+template <typename T, typename... TArgs> System &Registry::addSystem(TArgs... args)
+{
+    T *newSystem(new System(std::forward<TArgs>(args)...));
+    m_systems.insert(std::make_pair(std::type_index(typeid(T)), newSystem));
+    /* why not -->> m_systems.insert(std::type_index(typeid(newSystem)), newSystem); */
+}
+
+template <typename T> void Registry::removeSystem()
+{
+    const auto system = m_systems.find(std::type_index(typeid(T)));
+    m_systems.erase(system);
+}
+
+template <typename T> bool Registry::hasSystem() const
+{
+    return (m_systems.find(std::type_index(typeid(T))) != m_systems.end());
+    /* why not -->> (m_systems.find(std::type_index(typeid(T))) == nullptr) */
+}
+
+template <typename T> T &Registry::getSystem() const
+{
+    auto itrPtr = m_systems.find(std::type_index(typeid(T)));
+    return *(std::static_pointer_cast<T>(itrPtr->second));
+    /* why not -->> return m_systems.find(std::type_index(typeid(T)))->second; */
 }
 
 #endif
