@@ -1,6 +1,7 @@
 #ifndef _POOL_H
 #define _POOL_H
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
@@ -10,19 +11,21 @@
 class IPool
 {
   public:
-    virtual ~IPool();
+    virtual ~IPool() = default;
+
+    IPool &operator=(const IPool &other) = default;
 };
 
 /**
  * Simple wrapper class a around std::vector
  */
-template <typename T> class Pool : IPool
+template <typename T> class Pool : public IPool
 {
   private:
     std::vector<T> m_data;
 
   public:
-    Pool(uint32_t size = 100)
+    Pool(size_t size = 100)
     {
         m_data.resize(size);
     }

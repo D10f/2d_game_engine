@@ -12,7 +12,7 @@ class Game
 {
   private:
     bool m_isRunning;
-    uint32_t m_ticksLastFrame;
+    int32_t m_ticksLastFrame;
     SDL_Window *m_window;
     SDL_Renderer *m_renderer;
     std::unique_ptr<Registry> m_registry;
@@ -28,6 +28,8 @@ class Game
     void run();
 
     [[nodiscard]] bool isRunning() const;
+
+    void setup();
 
     void processInput();
 

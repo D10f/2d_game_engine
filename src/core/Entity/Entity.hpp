@@ -6,15 +6,23 @@
 class Entity
 {
   private:
-    uint32_t m_id;
+    int32_t m_id;
 
   public:
-    Entity(uint32_t id);
-    [[nodiscard]] uint32_t getId() const;
+    Entity(int32_t id);
+    [[nodiscard]] int32_t getId() const;
 
     bool operator==(const Entity &other) const
     {
         return m_id == other.getId();
+    }
+    bool operator<(const Entity other) const
+    {
+        return m_id < other.getId();
+    }
+    bool operator>(const Entity other) const
+    {
+        return m_id > other.getId();
     }
 };
 

@@ -22,8 +22,8 @@ class System
 
     void addEntity(const Entity &entity);
     void removeEntity(const Entity &entity);
-    [[nodiscard]] std::vector<Entity> &getEntities() const;
-    [[nodiscard]] Signature &getComponentSignature() const;
+    [[nodiscard]] std::vector<Entity> getEntities() const;
+    [[nodiscard]] Signature getComponentSignature() const;
     template <typename TComponent> void requireComponent();
 };
 

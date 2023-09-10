@@ -3,11 +3,12 @@
 CXX      = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Wfatal-errors
 TARGET   = game
-SRCDIRS  = ./src ./src/**/
+# SRCDIRS  = ./src
 INCDIRS  = ./src ./lib
 LIBS     = lua5.4 SDL2 SDL2_image SDL2_mixer SDL2_ttf
 
-SOURCES  = $(foreach D,$(SRCDIRS),$(wildcard $(D)/*.cpp))
+# SOURCES  = $(foreach D,$(SRCDIRS),$(wildcard $(D)/*.cpp))
+SOURCES  = $(shell find src/ -type f -name '*.cpp')
 INCLUDE  = $(foreach D,$(INCDIRS),-I$(D))
 LDLIBS   = $(foreach L,$(LIBS), -l$(L))
 # OBJS     = $(addprefix build/,$(notdir $(SOURCES:.cpp=.o)))

@@ -1,6 +1,9 @@
 #include "Game/Game.hpp"
+#include "Components/TransformComponent.hpp"
+#include "Components/rigid_body.hpp"
 #include "Logger/Logger.hpp"
 #include "core/ecs/registry.hpp"
+#include "glm/fwd.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_render.h>
@@ -53,6 +56,8 @@ Game::Game()
     SDL_RenderSetLogicalSize(m_renderer, static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight));
 
     m_registry = std::make_unique<Registry>();
+
+    setup();
 }
 
 Game::~Game()
@@ -61,6 +66,18 @@ Game::~Game()
     SDL_DestroyRenderer(m_renderer);
     SDL_DestroyWindow(m_window);
     SDL_Quit();
+}
+
+void Game::setup()
+{
+    // Create an entity
+    Entity tank = m_registry->createEntity();
+
+    // Add some components to the entity
+    m_registry->addComponent<TransformComponent>(tank, glm::vec2(10.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
+    /* m_registry->addComponent<RigidBodyComponent>(tank, glm::vec2(10.0, 5.0)); */
+
+    // In
 }
 
 void Game::run()
@@ -115,10 +132,10 @@ void Game::render()
 void Game::update()
 {
     // number of milliseconds since the SDL library initialized
-    uint32_t currentFrameTicks = SDL_GetTicks();
+    int32_t currentFrameTicks = SDL_GetTicks();
 
     // Check if an artifical delay is required to paint at desired frame rate.
-    uint32_t timeToWait = TARGET_FRAME_TIME - (currentFrameTicks - m_ticksLastFrame);
+    int32_t timeToWait = TARGET_FRAME_TIME - (currentFrameTicks - m_ticksLastFrame);
 
     if (timeToWait > 0 && timeToWait < TARGET_FRAME_TIME)
         SDL_Delay(timeToWait);

@@ -24,12 +24,12 @@ void System::removeEntity(const Entity &entity)
     }
 }
 
-std::vector<Entity> &System::getEntities() const
+std::vector<Entity> System::getEntities() const
 {
-    return *m_entities;
+    return m_entities;
 }
 
-Signature &System::getComponentSignature() const
+Signature System::getComponentSignature() const
 {
-    return *m_componentSignature;
+    return m_componentSignature;
 }
