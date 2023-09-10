@@ -63,7 +63,7 @@ class Registry
 
     template <typename T> bool hasComponent(Entity entity) const;
 
-    IComponent &getComponent(Entity entity) const;
+    template <typename T> T &getComponent(Entity entity) const;
 
     template <typename T, typename... TArgs> System &addSystem(TArgs... args);
 
@@ -150,6 +150,14 @@ template <typename T> bool Registry::hasComponent(Entity entity) const
     const auto componentId = Component<T>::getId();
     const auto entityId = entity.getId();
     return m_componentSignatures[entityId].test(componentId);
+}
+
+template <typename T> T &Registry::getComponent(Entity entity) const
+{
+    const auto componentId = Component<T>::getId();
+    const auto entityId = entity.getId();
+    auto componentPool = std::static_pointer_cast<Pool<T>>(m_componentPools[componentId]);
+    return componentPool->get(entityId);
 }
 
 template <typename T, typename... TArgs> System &Registry::addSystem(TArgs... args)

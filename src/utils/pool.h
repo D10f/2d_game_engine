@@ -62,7 +62,7 @@ template <typename T> class Pool : public IPool
         m_data[idx] = obj;
     }
 
-    T &get(uint32_t idx) const
+    T &get(uint32_t idx)
     {
         return m_data.at(idx);
     }

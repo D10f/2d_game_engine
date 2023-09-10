@@ -75,9 +75,10 @@ void Game::setup()
 
     // Add some components to the entity
     m_registry->addComponent<TransformComponent>(tank, glm::vec2(10.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
-    /* m_registry->addComponent<RigidBodyComponent>(tank, glm::vec2(10.0, 5.0)); */
+    m_registry->addComponent<RigidBodyComponent>(tank, glm::vec2(12.0, 3.0));
 
-    // In
+    auto tank_transform = m_registry->getComponent<TransformComponent>(tank);
+    auto tank_rigid_body = m_registry->getComponent<RigidBodyComponent>(tank);
 }
 
 void Game::run()
