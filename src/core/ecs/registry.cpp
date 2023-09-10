@@ -6,6 +6,9 @@ Entity Registry::createEntity()
 
     Entity newEntity(entityId);
 
+    if (entityId >= m_componentSignatures.size())
+        m_componentSignatures.resize(entityId + 1);
+
     m_addEntitiesBatch.insert(newEntity);
 
     Logger::log("New entity created with id of: " + std::to_string(entityId));
@@ -38,6 +41,10 @@ void Registry::addEntityToSystem(Entity entity)
 
 void Registry::update()
 {
-    // TODO: Add entities in batch
+    for (const auto entity : m_addEntitiesBatch)
+        addEntityToSystem(entity);
+
+    m_addEntitiesBatch.clear();
+
     // TODO: Remove entities in batch
 }

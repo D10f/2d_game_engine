@@ -1,13 +1,17 @@
 #include "Game/Game.hpp"
 #include "Logger/Logger.hpp"
+#include "core/ecs/registry.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <memory>
 
-Game::Game() : m_isRunning(false), m_window(nullptr), m_renderer(nullptr), m_windowWidth(960), m_windowHeight(540)
+Game::Game()
+    : m_isRunning(false), m_window(nullptr), m_renderer(nullptr), m_windowWidth(960), m_windowHeight(540),
+      m_ticksLastFrame(0)
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -47,6 +51,8 @@ Game::Game() : m_isRunning(false), m_window(nullptr), m_renderer(nullptr), m_win
     SDL_GetCurrentDisplayMode(0, &displayMode);
     SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     SDL_RenderSetLogicalSize(m_renderer, static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight));
+
+    m_registry = std::make_unique<Registry>();
 }
 
 Game::~Game()
@@ -97,11 +103,11 @@ void Game::render()
     SDL_RenderClear(m_renderer);
 
     // Draw PNG texture
-    SDL_Surface *surface = IMG_Load("assets/images/tank-tiger-right.png");
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(m_renderer, surface);
-    SDL_FreeSurface(surface);
+    /* SDL_Surface *surface = IMG_Load("assets/images/tank-tiger-right.png"); */
+    /* SDL_Texture *texture = SDL_CreateTextureFromSurface(m_renderer, surface); */
+    /* SDL_FreeSurface(surface); */
 
-    SDL_DestroyTexture(texture);
+    /* SDL_DestroyTexture(texture); */
 
     SDL_RenderPresent(m_renderer);
 }

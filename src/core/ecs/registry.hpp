@@ -25,7 +25,7 @@ class Registry
     /**
      * Vector of pointers to a pool of components. Each pool contains a different type of component.
      */
-    std::vector<IPool *> m_componentPools;
+    std::vector<std::shared_ptr<IPool>> m_componentPools;
 
     /**
      * Vector of all the entity's component signatures. The index of the vector is going to be the entity's id.
@@ -35,7 +35,7 @@ class Registry
     /**
      * Map of active systems, indexed by their type.
      */
-    std::unordered_map<std::type_index, System *> m_systems;
+    std::unordered_map<std::type_index, std::shared_ptr<System>> m_systems;
 
     /**
      * Entities awaiting creation in the next call to update.
@@ -75,7 +75,7 @@ template <typename T, typename... TArgs> void Registry::addComponent(Entity enti
 {
     const auto componentId = Component<T>::getId();
     const auto entityId = entity.getId();
-    const auto *componentPool = m_componentPools[componentId] || new Pool<T>();
+    const auto componentPool = m_componentPools[componentId] || std::make_shared<Pool<T>>();
 
     // Check if the component id is greater than the current size of component pools.
     if (componentId >= m_componentPools.size())
@@ -89,7 +89,8 @@ template <typename T, typename... TArgs> void Registry::addComponent(Entity enti
         componentPool->resize(m_totalEntities);
 
     // Create a new component, dynamically.
-    T newComponent(std::forward<TArgs>(args)...);
+    /* T newComponent(std::forward<TArgs>(args)...); */
+    std::shared_ptr<T> newComponent = std::make_shared<T>(std::forward<TArgs>(args)...);
 
     // Update the
     componentPool->set(entityId, newComponent);
@@ -114,9 +115,10 @@ template <typename T> bool Registry::hasComponent(Entity entity) const
 
 template <typename T, typename... TArgs> System &Registry::addSystem(TArgs... args)
 {
-    T *newSystem(new System(std::forward<TArgs>(args)...));
+    std::shared_ptr<T> newSystem = std::make_shared<T>(std::forward<TArgs>(args)...);
     m_systems.insert(std::make_pair(std::type_index(typeid(T)), newSystem));
     /* why not -->> m_systems.insert(std::type_index(typeid(newSystem)), newSystem); */
+    return newSystem;
 }
 
 template <typename T> void Registry::removeSystem()
