@@ -1,8 +1,8 @@
 #ifndef _CORE_SYSTEM_H
 #define _CORE_SYSTEM_H
 
-#include "core/Entity/Entity.hpp"
 #include "core/ecs/component.hpp"
+#include "core/ecs/entity.hpp"
 #include <bitset>
 #include <vector>
 

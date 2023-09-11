@@ -1,4 +1,4 @@
-#include "core/Entity/Entity.hpp"
+#include "core/ecs/entity.hpp"
 
 Entity::Entity(int32_t id, Registry *registry) : m_id(id), m_registry(registry)
 {

@@ -11,8 +11,8 @@
 
 #include "Components/TransformComponent.hpp"
 #include "Logger/Logger.hpp"
-#include "core/System/System.hpp"
 #include "core/ecs/component.hpp"
+#include "core/ecs/system.hpp"
 #include "utils/pool.h"
 
 class Registry
