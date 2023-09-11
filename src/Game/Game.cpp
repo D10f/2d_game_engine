@@ -152,7 +152,7 @@ void Game::update()
 
     m_ticksLastFrame = currentFrameTicks;
 
-    m_registry->getSystem<MovementSystem>().update();
+    m_registry->getSystem<MovementSystem>().update(deltaTime);
 
     m_registry->update();
 }

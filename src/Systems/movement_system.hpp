@@ -11,7 +11,7 @@ class MovementSystem : public System
   public:
     MovementSystem();
 
-    void update();
+    void update(float deltaTime);
 };
 
 #endif
