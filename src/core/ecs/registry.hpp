@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "Components/TransformComponent.hpp"
 #include "Logger/Logger.hpp"
 #include "core/ecs/component.hpp"
 #include "core/ecs/system.hpp"
@@ -65,7 +64,7 @@ class Registry
 
     template <typename T> T &getComponent(Entity entity) const;
 
-    template <typename T, typename... TArgs> System &addSystem(TArgs... args);
+    template <typename T, typename... TArgs> std::shared_ptr<System> addSystem(TArgs... args);
 
     template <typename T> void removeSystem();
 
@@ -160,7 +159,7 @@ template <typename T> T &Registry::getComponent(Entity entity) const
     return componentPool->get(entityId);
 }
 
-template <typename T, typename... TArgs> System &Registry::addSystem(TArgs... args)
+template <typename T, typename... TArgs> std::shared_ptr<System> Registry::addSystem(TArgs... args)
 {
     std::shared_ptr<T> newSystem = std::make_shared<T>(std::forward<TArgs>(args)...);
     m_systems.insert(std::make_pair(std::type_index(typeid(T)), newSystem));

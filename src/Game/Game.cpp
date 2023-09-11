@@ -1,7 +1,8 @@
 #include "Game/Game.hpp"
-#include "Components/TransformComponent.hpp"
 #include "Components/rigid_body.hpp"
+#include "Components/transform_component.hpp"
 #include "Logger/Logger.hpp"
+#include "Systems/movement_system.hpp"
 #include "core/ecs/registry.hpp"
 #include "glm/fwd.hpp"
 #include <SDL2/SDL.h>
@@ -70,6 +71,8 @@ Game::~Game()
 
 void Game::setup()
 {
+    m_registry->addSystem<MovementSystem>();
+
     // Create an entity
     Entity tank = m_registry->createEntity();
 
@@ -148,4 +151,8 @@ void Game::update()
     /* delta_time = (delta_time > 0.05f) ? 0.05f : delta_time; */
 
     m_ticksLastFrame = currentFrameTicks;
+
+    m_registry->getSystem<MovementSystem>().update();
+
+    m_registry->update();
 }

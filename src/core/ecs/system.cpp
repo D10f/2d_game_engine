@@ -1,5 +1,5 @@
-#include "core/System/System.hpp"
-#include "core/Entity/Entity.hpp"
+#include "core/ecs/system.hpp"
+#include "core/ecs/entity.hpp"
 #include <algorithm>
 
 void System::addEntity(const Entity &entity)

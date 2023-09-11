@@ -8,11 +8,11 @@ class Entity
 {
   private:
     int32_t m_id;
-    class Registry *m_registry;
 
   public:
     Entity(int32_t id, class Registry *registry);
 
+    class Registry *m_registry;
     // Hold reference to the owner class (updated to be provided in constructor)
     /* class Registry *registry; */
 
