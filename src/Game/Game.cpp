@@ -1,8 +1,10 @@
 #include "Game/Game.hpp"
 #include "Components/rigid_body.hpp"
+#include "Components/sprite_component.hpp"
 #include "Components/transform_component.hpp"
 #include "Logger/Logger.hpp"
 #include "Systems/movement_system.hpp"
+#include "Systems/render_system.hpp"
 #include "core/ecs/registry.hpp"
 #include "glm/fwd.hpp"
 #include <SDL2/SDL.h>
@@ -69,21 +71,6 @@ Game::~Game()
     SDL_Quit();
 }
 
-void Game::setup()
-{
-    m_registry->addSystem<MovementSystem>();
-
-    // Create an entity
-    Entity tank = m_registry->createEntity();
-
-    // Add some components to the entity
-    m_registry->addComponent<TransformComponent>(tank, glm::vec2(10.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
-    m_registry->addComponent<RigidBodyComponent>(tank, glm::vec2(12.0, 3.0));
-
-    auto tank_transform = m_registry->getComponent<TransformComponent>(tank);
-    auto tank_rigid_body = m_registry->getComponent<RigidBodyComponent>(tank);
-}
-
 void Game::run()
 {
     m_isRunning = true;
@@ -118,19 +105,21 @@ void Game::processInput()
     }
 }
 
-void Game::render()
+void Game::setup()
 {
-    SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
-    SDL_RenderClear(m_renderer);
+    m_registry->addSystem<MovementSystem>();
+    m_registry->addSystem<RenderSystem>();
 
-    // Draw PNG texture
-    /* SDL_Surface *surface = IMG_Load("assets/images/tank-tiger-right.png"); */
-    /* SDL_Texture *texture = SDL_CreateTextureFromSurface(m_renderer, surface); */
-    /* SDL_FreeSurface(surface); */
+    // Create an entity
+    Entity tank = m_registry->createEntity();
 
-    /* SDL_DestroyTexture(texture); */
+    // Add some components to the entity
+    m_registry->addComponent<TransformComponent>(tank, glm::vec2(10.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
+    m_registry->addComponent<RigidBodyComponent>(tank, glm::vec2(42.0, 3.0));
+    m_registry->addComponent<SpriteComponent>(tank, 64, 64);
 
-    SDL_RenderPresent(m_renderer);
+    /* auto tank_transform = m_registry->getComponent<TransformComponent>(tank); */
+    /* auto tank_rigid_body = m_registry->getComponent<RigidBodyComponent>(tank); */
 }
 
 void Game::update()
@@ -152,7 +141,26 @@ void Game::update()
 
     m_ticksLastFrame = currentFrameTicks;
 
+    // Call systems that need update
     m_registry->getSystem<MovementSystem>().update(deltaTime);
 
     m_registry->update();
+}
+
+void Game::render()
+{
+    SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
+    SDL_RenderClear(m_renderer);
+
+    // Draw PNG texture
+    /* SDL_Surface *surface = IMG_Load("assets/images/tank-tiger-right.png"); */
+    /* SDL_Texture *texture = SDL_CreateTextureFromSurface(m_renderer, surface); */
+    /* SDL_FreeSurface(surface); */
+
+    /* SDL_DestroyTexture(texture); */
+
+    // Update all systems that need rendering
+    m_registry->getSystem<RenderSystem>().update(m_renderer);
+
+    SDL_RenderPresent(m_renderer);
 }
