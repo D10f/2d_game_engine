@@ -5,6 +5,7 @@
 #include "Logger/Logger.hpp"
 #include "Systems/movement_system.hpp"
 #include "Systems/render_system.hpp"
+#include "core/assets/asset_store.h"
 #include "core/ecs/registry.hpp"
 #include "glm/fwd.hpp"
 #include <SDL2/SDL.h>
@@ -59,6 +60,7 @@ Game::Game()
     SDL_RenderSetLogicalSize(m_renderer, static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight));
 
     m_registry = std::make_unique<Registry>();
+    m_assetStore = std::make_unique<AssetStore>();
 
     setup();
 }
@@ -110,16 +112,20 @@ void Game::setup()
     m_registry->addSystem<MovementSystem>();
     m_registry->addSystem<RenderSystem>();
 
-    // Create an entity
+    // Add some assets
+    m_assetStore->addTexture(m_renderer, "tank-image-right", "./assets/images/tank-panther-right.png");
+    m_assetStore->addTexture(m_renderer, "truck-image-left", "./assets/images/truck-ford-left.png");
+
+    // Create a few entities and components to them
     Entity tank = m_registry->createEntity();
-
-    // Add some components to the entity
     m_registry->addComponent<TransformComponent>(tank, glm::vec2(10.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
-    m_registry->addComponent<RigidBodyComponent>(tank, glm::vec2(42.0, 3.0));
-    m_registry->addComponent<SpriteComponent>(tank, 64, 64);
+    m_registry->addComponent<RigidBodyComponent>(tank, glm::vec2(42.0, 0.0));
+    m_registry->addComponent<SpriteComponent>(tank, "tank-image-right", 32, 32);
 
-    /* auto tank_transform = m_registry->getComponent<TransformComponent>(tank); */
-    /* auto tank_rigid_body = m_registry->getComponent<RigidBodyComponent>(tank); */
+    Entity truck = m_registry->createEntity();
+    m_registry->addComponent<TransformComponent>(truck, glm::vec2(70.0, 40.0), glm::vec2(1.0, 1.0), 0.0);
+    m_registry->addComponent<RigidBodyComponent>(truck, glm::vec2(40.0, 0.0));
+    m_registry->addComponent<SpriteComponent>(truck, "truck-image-left", 32, 32);
 }
 
 void Game::update()
@@ -160,7 +166,7 @@ void Game::render()
     /* SDL_DestroyTexture(texture); */
 
     // Update all systems that need rendering
-    m_registry->getSystem<RenderSystem>().update(m_renderer);
+    m_registry->getSystem<RenderSystem>().update(m_renderer, m_assetStore);
 
     SDL_RenderPresent(m_renderer);
 }

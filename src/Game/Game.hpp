@@ -1,6 +1,7 @@
 #ifndef _GAME_H
 #define _GAME_H
 
+#include "core/assets/asset_store.h"
 #include "core/ecs/registry.hpp"
 #include <SDL2/SDL.h>
 #include <memory>
@@ -16,6 +17,7 @@ class Game
     SDL_Window *m_window;
     SDL_Renderer *m_renderer;
     std::unique_ptr<Registry> m_registry;
+    std::unique_ptr<AssetStore> m_assetStore;
 
   public:
     size_t m_windowWidth;

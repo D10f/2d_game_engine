@@ -18,7 +18,7 @@ void MovementSystem::update(float deltaTime)
         transform.m_position.x += rigidBody.m_velocity.x * deltaTime;
         transform.m_position.y += rigidBody.m_velocity.y * deltaTime;
 
-        Logger::log("Entity id(" + std::to_string(entity.getId()) + ") updated to position " +
-                    std::to_string(transform.m_position.x) + ", " + std::to_string(transform.m_position.y) + ".");
+        /* Logger::log("Entity id(" + std::to_string(entity.getId()) + ") updated to position " + */
+        /*             std::to_string(transform.m_position.x) + ", " + std::to_string(transform.m_position.y) + "."); */
     }
 }
