@@ -8,10 +8,12 @@
 #include "core/assets/asset_store.h"
 #include "core/ecs/registry.hpp"
 #include "glm/fwd.hpp"
+#include "modules/map.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
+#include <fstream>
 #include <glm/glm.hpp>
 #include <iostream>
 #include <memory>
@@ -54,12 +56,12 @@ Game::Game()
 
     // We can also force fullscreen window but scaling down the dimensions to a set width and height.
     // For that use a combination of SDL_SetWindowFullscreen and SDL_RenderSetLogicalSize.
-    SDL_DisplayMode displayMode;
-    SDL_GetCurrentDisplayMode(0, &displayMode);
-    SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-    SDL_RenderSetLogicalSize(m_renderer, static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight));
+    /* SDL_DisplayMode displayMode; */
+    /* SDL_GetCurrentDisplayMode(0, &displayMode); */
+    /* SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP); */
+    /* SDL_RenderSetLogicalSize(m_renderer, static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight)); */
 
-    m_registry = std::make_unique<Registry>();
+    m_registry = std::make_shared<Registry>();
     m_assetStore = std::make_unique<AssetStore>();
 
     setup();
@@ -107,7 +109,7 @@ void Game::processInput()
     }
 }
 
-void Game::setup()
+void Game::loadLevel(uint8_t level)
 {
     m_registry->addSystem<MovementSystem>();
     m_registry->addSystem<RenderSystem>();
@@ -115,6 +117,10 @@ void Game::setup()
     // Add some assets
     m_assetStore->addTexture(m_renderer, "tank-image-right", "./assets/images/tank-panther-right.png");
     m_assetStore->addTexture(m_renderer, "truck-image-left", "./assets/images/truck-ford-left.png");
+    m_assetStore->addTexture(m_renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
+
+    Map map = Map(m_registry, "jungle-tilemap", 32, 1.0);
+    map.loadMap("./assets/tilemaps/jungle.map", 25, 20);
 
     // Create a few entities and components to them
     Entity tank = m_registry->createEntity();
@@ -126,6 +132,11 @@ void Game::setup()
     m_registry->addComponent<TransformComponent>(truck, glm::vec2(70.0, 40.0), glm::vec2(1.0, 1.0), 0.0);
     m_registry->addComponent<RigidBodyComponent>(truck, glm::vec2(40.0, 0.0));
     m_registry->addComponent<SpriteComponent>(truck, "truck-image-left", 32, 32);
+}
+
+void Game::setup()
+{
+    loadLevel(1);
 }
 
 void Game::update()

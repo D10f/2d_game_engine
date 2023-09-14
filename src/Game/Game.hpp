@@ -16,7 +16,7 @@ class Game
     int32_t m_ticksLastFrame;
     SDL_Window *m_window;
     SDL_Renderer *m_renderer;
-    std::unique_ptr<Registry> m_registry;
+    std::shared_ptr<Registry> m_registry;
     std::unique_ptr<AssetStore> m_assetStore;
 
   public:
@@ -32,6 +32,8 @@ class Game
     [[nodiscard]] bool isRunning() const;
 
     void setup();
+
+    void loadLevel(uint8_t level);
 
     void processInput();
 
