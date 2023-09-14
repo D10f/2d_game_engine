@@ -37,7 +37,7 @@ void Map::loadMap(const std::string &filePath, size_t tilesX, size_t tilesY)
                 tile,
                 glm::vec2(static_cast<int>(x) * (m_tileSize * m_scale), static_cast<int>(y) * (m_tileSize * m_scale)),
                 glm::vec2(m_scale, m_scale), 0.0);
-            m_registry->addComponent<SpriteComponent>(tile, "jungle-tilemap", m_tileSize, m_tileSize, srcRectX,
+            m_registry->addComponent<SpriteComponent>(tile, "jungle-tilemap", m_tileSize, m_tileSize, 1, srcRectX,
                                                       srcRectY);
         }
     }

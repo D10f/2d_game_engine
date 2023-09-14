@@ -12,12 +12,14 @@ class SpriteComponent
     std::string m_textureId;
     uint32_t m_width;
     uint32_t m_height;
+    uint32_t m_zIndex;
     SDL_Rect srcRect;
 
-    SpriteComponent(std::string textureId = "", uint32_t width = 64, uint32_t height = 64, uint32_t srcRectX = 0,
-                    uint32_t srcRectY = 0)
-        : m_textureId(std::move(textureId)), m_width(width), m_height(height)
+    SpriteComponent(std::string textureId = "", uint32_t width = 64, uint32_t height = 64, uint32_t zIndex = 0,
+                    uint32_t srcRectX = 0, uint32_t srcRectY = 0)
+        : m_textureId(std::move(textureId)), m_width(width), m_height(height), m_zIndex(zIndex)
     {
+
         srcRect = {static_cast<int>(srcRectX), static_cast<int>(srcRectY), static_cast<int>(m_width),
                    static_cast<int>(m_height)};
     }

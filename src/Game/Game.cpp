@@ -115,6 +115,7 @@ void Game::loadLevel(uint8_t level)
     m_registry->addSystem<RenderSystem>();
 
     // Add some assets
+    m_assetStore->addTexture(m_renderer, "helicopter", "./assets/images/chopper.png");
     m_assetStore->addTexture(m_renderer, "tank-image-right", "./assets/images/tank-panther-right.png");
     m_assetStore->addTexture(m_renderer, "truck-image-left", "./assets/images/truck-ford-left.png");
     m_assetStore->addTexture(m_renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
@@ -126,12 +127,17 @@ void Game::loadLevel(uint8_t level)
     Entity tank = m_registry->createEntity();
     m_registry->addComponent<TransformComponent>(tank, glm::vec2(10.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
     m_registry->addComponent<RigidBodyComponent>(tank, glm::vec2(42.0, 0.0));
-    m_registry->addComponent<SpriteComponent>(tank, "tank-image-right", 32, 32);
+    m_registry->addComponent<SpriteComponent>(tank, "tank-image-right", 32, 32, 2);
+
+    Entity chopper = m_registry->createEntity();
+    m_registry->addComponent<TransformComponent>(chopper, glm::vec2(70.0, 50.0), glm::vec2(1.0, 1.0), 0.0);
+    m_registry->addComponent<RigidBodyComponent>(chopper, glm::vec2(40.0, 0.0));
+    m_registry->addComponent<SpriteComponent>(chopper, "helicopter", 32, 32, 3);
 
     Entity truck = m_registry->createEntity();
     m_registry->addComponent<TransformComponent>(truck, glm::vec2(70.0, 40.0), glm::vec2(1.0, 1.0), 0.0);
     m_registry->addComponent<RigidBodyComponent>(truck, glm::vec2(40.0, 0.0));
-    m_registry->addComponent<SpriteComponent>(truck, "truck-image-left", 32, 32);
+    m_registry->addComponent<SpriteComponent>(truck, "truck-image-left", 32, 32, 2);
 }
 
 void Game::setup()
