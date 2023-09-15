@@ -1,10 +1,12 @@
 #include "Game/Game.hpp"
 #include "Components/animation_component.hpp"
+#include "Components/box_collider.hpp"
 #include "Components/rigid_body.hpp"
 #include "Components/sprite_component.hpp"
 #include "Components/transform_component.hpp"
 #include "Logger/Logger.hpp"
 #include "Systems/animation_system.hpp"
+#include "Systems/collider_system.hpp"
 #include "Systems/movement_system.hpp"
 #include "Systems/render_system.hpp"
 #include "core/assets/asset_store.h"
@@ -116,6 +118,7 @@ void Game::loadLevel(uint8_t level)
     m_registry->addSystem<MovementSystem>();
     m_registry->addSystem<RenderSystem>();
     m_registry->addSystem<AnimationSystem>();
+    m_registry->addSystem<CollisionSystem>();
 
     // Add some assets
     m_assetStore->addTexture(m_renderer, "radar", "./assets/images/radar.png");
@@ -128,27 +131,30 @@ void Game::loadLevel(uint8_t level)
     map.loadMap("./assets/tilemaps/jungle.map", 25, 20);
 
     // Create a few entities and components to them
-    Entity tank = m_registry->createEntity();
-    m_registry->addComponent<TransformComponent>(tank, glm::vec2(10.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
-    m_registry->addComponent<RigidBodyComponent>(tank, glm::vec2(42.0, 0.0));
-    m_registry->addComponent<SpriteComponent>(tank, "tank-image-right", 32, 32, 2);
-
-    Entity chopper = m_registry->createEntity();
-    m_registry->addComponent<TransformComponent>(chopper, glm::vec2(70.0, 100.0), glm::vec2(1.0, 1.0), 0.0);
-    m_registry->addComponent<RigidBodyComponent>(chopper, glm::vec2(40.0, 0.0));
-    m_registry->addComponent<SpriteComponent>(chopper, "chopper-spritesheet", 32, 32, 3);
-    m_registry->addComponent<AnimationComponent>(chopper, 2, 16, true);
-
     Entity radar = m_registry->createEntity();
     m_registry->addComponent<TransformComponent>(radar, glm::vec2(m_windowWidth - 74, 10.0), glm::vec2(1.0, 1.0), 0.0);
     m_registry->addComponent<RigidBodyComponent>(radar, glm::vec2(0.0, 0.0));
     m_registry->addComponent<SpriteComponent>(radar, "radar", 64, 64, 4);
     m_registry->addComponent<AnimationComponent>(radar, 8, 5, true);
 
+    Entity chopper = m_registry->createEntity();
+    m_registry->addComponent<TransformComponent>(chopper, glm::vec2(70.0, 100.0), glm::vec2(1.0, 1.0), 0.0);
+    m_registry->addComponent<RigidBodyComponent>(chopper, glm::vec2(40.0, 0.0));
+    m_registry->addComponent<SpriteComponent>(chopper, "chopper-spritesheet", 32, 32, 3);
+    m_registry->addComponent<AnimationComponent>(chopper, 2, 16, true);
+    m_registry->addComponent<BoxColliderComponent>(chopper, 32, 32);
+
+    Entity tank = m_registry->createEntity();
+    m_registry->addComponent<TransformComponent>(tank, glm::vec2(400.0, 40.0), glm::vec2(1.0, 1.0), 0.0);
+    m_registry->addComponent<RigidBodyComponent>(tank, glm::vec2(40.0, 0.0));
+    m_registry->addComponent<SpriteComponent>(tank, "tank-image-right", 32, 32, 2);
+    m_registry->addComponent<BoxColliderComponent>(tank, 32, 32);
+
     Entity truck = m_registry->createEntity();
-    m_registry->addComponent<TransformComponent>(truck, glm::vec2(70.0, 40.0), glm::vec2(1.0, 1.0), 0.0);
-    m_registry->addComponent<RigidBodyComponent>(truck, glm::vec2(40.0, 0.0));
+    m_registry->addComponent<TransformComponent>(truck, glm::vec2(600.0, 40.0), glm::vec2(1.0, 1.0), 0.0);
+    m_registry->addComponent<RigidBodyComponent>(truck, glm::vec2(-40.0, 0.0));
     m_registry->addComponent<SpriteComponent>(truck, "truck-image-left", 32, 32, 2);
+    m_registry->addComponent<BoxColliderComponent>(truck, 32, 32);
 }
 
 void Game::setup()
@@ -178,6 +184,7 @@ void Game::update()
     // Call systems that need update
     m_registry->getSystem<MovementSystem>().update(deltaTime);
     m_registry->getSystem<AnimationSystem>().update(deltaTime);
+    m_registry->getSystem<CollisionSystem>().update(deltaTime);
 
     m_registry->update();
 }

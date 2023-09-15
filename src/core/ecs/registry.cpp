@@ -12,7 +12,7 @@ Entity Registry::createEntity()
     if (entityId >= m_componentSignatures.size())
         m_componentSignatures.resize(entityId + 1);
 
-    Logger::log("New entity created with id of: " + std::to_string(entityId));
+    /* Logger::log("New entity created with id of: " + std::to_string(entityId)); */
 
     return newEntity;
 }
