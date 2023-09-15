@@ -23,7 +23,7 @@ void CollisionSystem::update(float /*deltaTime*/)
     {
         const auto entityA = *i;
         const auto &transformA = entityA.m_registry->getComponent<TransformComponent>(entityA);
-        const auto &boxColliderA = entityA.m_registry->getComponent<BoxColliderComponent>(entityA);
+        auto &boxColliderA = entityA.m_registry->getComponent<BoxColliderComponent>(entityA);
 
         /* for (const auto &other : getEntities()) */
         /* for (int j = i + 1; j < totalSize; j++) */
@@ -31,7 +31,7 @@ void CollisionSystem::update(float /*deltaTime*/)
         {
             const auto entityB = *j;
             const auto &transformB = entityB.m_registry->getComponent<TransformComponent>(entityB);
-            const auto &boxColliderB = entityB.m_registry->getComponent<BoxColliderComponent>(entityB);
+            auto &boxColliderB = entityB.m_registry->getComponent<BoxColliderComponent>(entityB);
 
             if (checkAABBCollision(transformA.m_position.x + boxColliderA.m_offset.x,
                                    transformA.m_position.y + boxColliderA.m_offset.y, boxColliderA.m_width,
@@ -39,8 +39,15 @@ void CollisionSystem::update(float /*deltaTime*/)
                                    transformB.m_position.y + boxColliderB.m_offset.y, boxColliderB.m_width,
                                    boxColliderB.m_height))
             {
+                boxColliderA.m_isColliding = true;
+                boxColliderB.m_isColliding = true;
                 Logger::log("Collision between " + std::to_string(entityA.getId()) + "and " +
                             std::to_string(entityB.getId()));
+            }
+            else
+            {
+                boxColliderA.m_isColliding = false;
+                boxColliderB.m_isColliding = false;
             }
         }
     }

@@ -7,6 +7,7 @@
 #include "Logger/Logger.hpp"
 #include "Systems/animation_system.hpp"
 #include "Systems/collider_system.hpp"
+#include "Systems/debug_system.hpp"
 #include "Systems/movement_system.hpp"
 #include "Systems/render_system.hpp"
 #include "core/assets/asset_store.h"
@@ -23,8 +24,8 @@
 #include <memory>
 
 Game::Game()
-    : m_isRunning(false), m_window(nullptr), m_renderer(nullptr), m_windowWidth(960), m_windowHeight(540),
-      m_ticksLastFrame(0)
+    : m_isRunning(false), m_isDebugging(false), m_window(nullptr), m_renderer(nullptr), m_windowWidth(960),
+      m_windowHeight(540), m_ticksLastFrame(0)
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -108,6 +109,9 @@ void Game::processInput()
         case SDL_KEYDOWN:
             if (event.key.keysym.sym == SDLK_ESCAPE)
                 m_isRunning = false;
+
+            if (event.key.keysym.sym == SDLK_d)
+                m_isDebugging = !m_isDebugging;
             break;
         }
     }
@@ -117,6 +121,7 @@ void Game::loadLevel(uint8_t level)
 {
     m_registry->addSystem<MovementSystem>();
     m_registry->addSystem<RenderSystem>();
+    m_registry->addSystem<DebugSystem>();
     m_registry->addSystem<AnimationSystem>();
     m_registry->addSystem<CollisionSystem>();
 
@@ -203,6 +208,8 @@ void Game::render()
 
     // Update all systems that need rendering
     m_registry->getSystem<RenderSystem>().update(m_renderer, m_assetStore);
+    if (m_isDebugging)
+        m_registry->getSystem<DebugSystem>().update(m_renderer);
 
     SDL_RenderPresent(m_renderer);
 }

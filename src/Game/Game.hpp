@@ -13,6 +13,7 @@ class Game
 {
   private:
     bool m_isRunning;
+    bool m_isDebugging;
     int32_t m_ticksLastFrame;
     SDL_Window *m_window;
     SDL_Renderer *m_renderer;
