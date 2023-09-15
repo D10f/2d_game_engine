@@ -1,8 +1,10 @@
 #include "Game/Game.hpp"
+#include "Components/animation_component.hpp"
 #include "Components/rigid_body.hpp"
 #include "Components/sprite_component.hpp"
 #include "Components/transform_component.hpp"
 #include "Logger/Logger.hpp"
+#include "Systems/animation_system.hpp"
 #include "Systems/movement_system.hpp"
 #include "Systems/render_system.hpp"
 #include "core/assets/asset_store.h"
@@ -113,14 +115,16 @@ void Game::loadLevel(uint8_t level)
 {
     m_registry->addSystem<MovementSystem>();
     m_registry->addSystem<RenderSystem>();
+    m_registry->addSystem<AnimationSystem>();
 
     // Add some assets
-    m_assetStore->addTexture(m_renderer, "helicopter", "./assets/images/chopper.png");
+    m_assetStore->addTexture(m_renderer, "radar", "./assets/images/radar.png");
+    m_assetStore->addTexture(m_renderer, "chopper-spritesheet", "./assets/images/chopper-spritesheet.png");
     m_assetStore->addTexture(m_renderer, "tank-image-right", "./assets/images/tank-panther-right.png");
     m_assetStore->addTexture(m_renderer, "truck-image-left", "./assets/images/truck-ford-left.png");
     m_assetStore->addTexture(m_renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
 
-    Map map = Map(m_registry, "jungle-tilemap", 32, 1.0);
+    Map map = Map(m_registry, "jungle-tilemap", 32, 2.0);
     map.loadMap("./assets/tilemaps/jungle.map", 25, 20);
 
     // Create a few entities and components to them
@@ -130,9 +134,16 @@ void Game::loadLevel(uint8_t level)
     m_registry->addComponent<SpriteComponent>(tank, "tank-image-right", 32, 32, 2);
 
     Entity chopper = m_registry->createEntity();
-    m_registry->addComponent<TransformComponent>(chopper, glm::vec2(70.0, 50.0), glm::vec2(1.0, 1.0), 0.0);
+    m_registry->addComponent<TransformComponent>(chopper, glm::vec2(70.0, 100.0), glm::vec2(1.0, 1.0), 0.0);
     m_registry->addComponent<RigidBodyComponent>(chopper, glm::vec2(40.0, 0.0));
-    m_registry->addComponent<SpriteComponent>(chopper, "helicopter", 32, 32, 3);
+    m_registry->addComponent<SpriteComponent>(chopper, "chopper-spritesheet", 32, 32, 3);
+    m_registry->addComponent<AnimationComponent>(chopper, 2, 16, true);
+
+    Entity radar = m_registry->createEntity();
+    m_registry->addComponent<TransformComponent>(radar, glm::vec2(m_windowWidth - 74, 10.0), glm::vec2(1.0, 1.0), 0.0);
+    m_registry->addComponent<RigidBodyComponent>(radar, glm::vec2(0.0, 0.0));
+    m_registry->addComponent<SpriteComponent>(radar, "radar", 64, 64, 4);
+    m_registry->addComponent<AnimationComponent>(radar, 8, 5, true);
 
     Entity truck = m_registry->createEntity();
     m_registry->addComponent<TransformComponent>(truck, glm::vec2(70.0, 40.0), glm::vec2(1.0, 1.0), 0.0);
@@ -166,6 +177,7 @@ void Game::update()
 
     // Call systems that need update
     m_registry->getSystem<MovementSystem>().update(deltaTime);
+    m_registry->getSystem<AnimationSystem>().update(deltaTime);
 
     m_registry->update();
 }
