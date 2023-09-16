@@ -2,8 +2,10 @@
 #define _CORE_REGISTRY_H
 
 #include <cstdint>
+#include <deque>
 #include <memory>
 #include <set>
+#include <string>
 #include <typeindex>
 #include <unordered_map>
 #include <utility>
@@ -49,12 +51,19 @@ class Registry
      */
     std::set<Entity> m_removeEntitiesBatch;
 
+    /**
+     * List of entity ids that are free to reuse.
+     */
+    std::deque<uint32_t> m_freeIds;
+
   public:
     Registry() = default;
 
     void update();
 
     Entity createEntity();
+
+    void destroyEntity(Entity entity);
 
     template <typename T, typename... TArgs> void addComponent(Entity entity, TArgs &&...args);
 
@@ -74,7 +83,8 @@ class Registry
 
     System addSystem();
 
-    void addEntityToSystem(Entity entity);
+    void addEntityToSystems(Entity entity);
+    void removeEntityFromSystems(Entity entity);
 };
 
 template <typename T, typename... TArgs> void Registry::addComponent(Entity entity, TArgs &&...args)

@@ -62,6 +62,11 @@ template <typename T> class Pool : public IPool
         m_data[idx] = obj;
     }
 
+    void unset(uint32_t idx)
+    {
+        m_data.erase(m_data.begin() + idx);
+    }
+
     T &get(uint32_t idx)
     {
         return m_data.at(idx);

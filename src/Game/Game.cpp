@@ -6,7 +6,7 @@
 #include "Components/transform_component.hpp"
 #include "Logger/Logger.hpp"
 #include "Systems/animation_system.hpp"
-#include "Systems/collider_system.hpp"
+#include "Systems/collision_system.hpp"
 #include "Systems/debug_system.hpp"
 #include "Systems/movement_system.hpp"
 #include "Systems/render_system.hpp"
@@ -160,6 +160,8 @@ void Game::loadLevel(uint8_t level)
     m_registry->addComponent<RigidBodyComponent>(truck, glm::vec2(-40.0, 0.0));
     m_registry->addComponent<SpriteComponent>(truck, "truck-image-left", 32, 32, 2);
     m_registry->addComponent<BoxColliderComponent>(truck, 32, 32);
+
+    m_registry->destroyEntity(tank);
 }
 
 void Game::setup()
@@ -186,12 +188,12 @@ void Game::update()
 
     m_ticksLastFrame = currentFrameTicks;
 
+    m_registry->update();
+
     // Call systems that need update
     m_registry->getSystem<MovementSystem>().update(deltaTime);
     m_registry->getSystem<AnimationSystem>().update(deltaTime);
     m_registry->getSystem<CollisionSystem>().update(deltaTime);
-
-    m_registry->update();
 }
 
 void Game::render()

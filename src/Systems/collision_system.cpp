@@ -1,7 +1,7 @@
+#include "Systems/collision_system.hpp"
 #include "Components/box_collider.hpp"
 #include "Components/transform_component.hpp"
 #include "Logger/Logger.hpp"
-#include "Systems/collider_system.hpp"
 #include "core/ecs/registry.hpp"
 #include "utils/aabb_collision.hpp"
 #include <string>
@@ -27,9 +27,13 @@ void CollisionSystem::update(float /*deltaTime*/)
 
         /* for (const auto &other : getEntities()) */
         /* for (int j = i + 1; j < totalSize; j++) */
-        for (auto j = i + 1; j != entities.end(); j++)
+        for (auto j = i; j != entities.end(); j++)
         {
             const auto entityB = *j;
+
+            if (entityA == entityB)
+                continue;
+
             const auto &transformB = entityB.m_registry->getComponent<TransformComponent>(entityB);
             auto &boxColliderB = entityB.m_registry->getComponent<BoxColliderComponent>(entityB);
 
