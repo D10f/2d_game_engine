@@ -3,6 +3,7 @@
 
 #include "core/assets/asset_store.h"
 #include "core/ecs/registry.hpp"
+#include "core/events/event_bus.hpp"
 #include <SDL2/SDL.h>
 #include <memory>
 
@@ -19,6 +20,7 @@ class Game
     SDL_Renderer *m_renderer;
     std::shared_ptr<Registry> m_registry;
     std::unique_ptr<AssetStore> m_assetStore;
+    std::unique_ptr<EventBus> m_eventBus;
 
   public:
     size_t m_windowWidth;
