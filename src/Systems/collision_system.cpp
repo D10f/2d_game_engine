@@ -1,8 +1,10 @@
 #include "Systems/collision_system.hpp"
 #include "Components/box_collider.hpp"
 #include "Components/transform_component.hpp"
+#include "Events/collision_event.hpp"
 #include "Logger/Logger.hpp"
 #include "core/ecs/registry.hpp"
+#include "core/events/event_bus.hpp"
 #include "utils/aabb_collision.hpp"
 #include <string>
 
@@ -12,7 +14,7 @@ CollisionSystem::CollisionSystem()
     requireComponent<BoxColliderComponent>();
 }
 
-void CollisionSystem::update(float /*deltaTime*/)
+void CollisionSystem::update(std::unique_ptr<EventBus> &eventBus)
 {
     const auto &entities = getEntities();
     const auto totalSize = entities.size();
@@ -45,6 +47,9 @@ void CollisionSystem::update(float /*deltaTime*/)
             {
                 boxColliderA.m_isColliding = true;
                 boxColliderB.m_isColliding = true;
+
+                eventBus->EmitEvent<CollisionEvent>(entityA, entityB);
+
                 Logger::log("Collision between " + std::to_string(entityA.getId()) + "and " +
                             std::to_string(entityB.getId()));
             }

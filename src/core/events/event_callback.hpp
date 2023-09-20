@@ -7,36 +7,38 @@
 class IEventCallback
 {
   private:
-    virtual void call(const Event &event) = 0;
+    virtual void Call(Event &e) = 0;
 
   public:
     virtual ~IEventCallback() = default;
-    void execute(const Event &event)
+
+    void Execute(Event &e)
     {
-        call(event);
+        Call(e);
     }
 };
 
 template <typename TOwner, typename TEvent> class EventCallback : public IEventCallback
 {
   private:
-    using CallbackFunction = void (TOwner::*)(Event &);
+    typedef void (TOwner::*CallbackFunction)(TEvent &);
 
-    TOwner *m_ownerInstance;
-    CallbackFunction m_callbackFunction;
+    TOwner *ownerInstance;
+    CallbackFunction callbackFunction;
 
-    void call(const Event &event) override
+    virtual void Call(Event &e) override
     {
-        std::invoke(m_callbackFunction, m_ownerInstance, static_cast<TEvent &>(event));
+        std::invoke(callbackFunction, ownerInstance, static_cast<TEvent &>(e));
     }
 
   public:
     EventCallback(TOwner *ownerInstance, CallbackFunction callbackFunction)
-        : m_ownerInstance(ownerInstance), m_callbackFunction(callbackFunction)
     {
+        this->ownerInstance = ownerInstance;
+        this->callbackFunction = callbackFunction;
     }
 
-    ~EventCallback() override = default;
+    virtual ~EventCallback() override = default;
 };
 
 #endif

@@ -7,6 +7,7 @@
 #include "Logger/Logger.hpp"
 #include "Systems/animation_system.hpp"
 #include "Systems/collision_system.hpp"
+#include "Systems/damage_system.hpp"
 #include "Systems/debug_system.hpp"
 #include "Systems/movement_system.hpp"
 #include "Systems/render_system.hpp"
@@ -68,6 +69,7 @@ Game::Game()
 
     m_registry = std::make_shared<Registry>();
     m_assetStore = std::make_unique<AssetStore>();
+    m_eventBus = std::make_unique<EventBus>();
 
     setup();
 }
@@ -124,6 +126,10 @@ void Game::loadLevel(uint8_t level)
     m_registry->addSystem<DebugSystem>();
     m_registry->addSystem<AnimationSystem>();
     m_registry->addSystem<CollisionSystem>();
+    m_registry->addSystem<DamageSystem>();
+
+    // Subscribe to events, see comments on update fn below
+    m_registry->getSystem<DamageSystem>().subscribeToEvents(m_eventBus);
 
     // Add some assets
     m_assetStore->addTexture(m_renderer, "radar", "./assets/images/radar.png");
@@ -161,7 +167,7 @@ void Game::loadLevel(uint8_t level)
     m_registry->addComponent<SpriteComponent>(truck, "truck-image-left", 32, 32, 2);
     m_registry->addComponent<BoxColliderComponent>(truck, 32, 32);
 
-    m_registry->destroyEntity(tank);
+    m_registry->destroyEntity(chopper);
 }
 
 void Game::setup()
@@ -188,12 +194,23 @@ void Game::update()
 
     m_ticksLastFrame = currentFrameTicks;
 
+    ///////////
+    // Subscribe on every frame???
+
+    // Reset all event handlers for every frame
+    /* m_eventBus->clear(); */
+
+    // Subscribe to events for all systems
+    /* m_registry->getSystem<DamageSystem>().subscribeToEvents(m_eventBus); */
+
+    ///////////
+
     m_registry->update();
 
     // Call systems that need update
     m_registry->getSystem<MovementSystem>().update(deltaTime);
     m_registry->getSystem<AnimationSystem>().update(deltaTime);
-    m_registry->getSystem<CollisionSystem>().update(deltaTime);
+    m_registry->getSystem<CollisionSystem>().update(m_eventBus);
 }
 
 void Game::render()
