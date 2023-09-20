@@ -1,10 +1,12 @@
 #include "Game/Game.hpp"
 #include "Components/animation_component.hpp"
 #include "Components/box_collider.hpp"
+#include "Components/keyboard_controlled_component.hpp"
 #include "Components/rigid_body.hpp"
 #include "Components/sprite_component.hpp"
 #include "Components/transform_component.hpp"
-#include "Events/keypress_event.hpp"
+#include "Events/key_press_event.hpp"
+#include "Events/key_release_event.hpp"
 #include "Logger/Logger.hpp"
 #include "Systems/animation_system.hpp"
 #include "Systems/collision_system.hpp"
@@ -64,10 +66,10 @@ Game::Game()
 
     // We can also force fullscreen window but scaling down the dimensions to a set width and height.
     // For that use a combination of SDL_SetWindowFullscreen and SDL_RenderSetLogicalSize.
-    SDL_DisplayMode displayMode;
-    SDL_GetCurrentDisplayMode(0, &displayMode);
-    SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-    SDL_RenderSetLogicalSize(m_renderer, static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight));
+    /* SDL_DisplayMode displayMode; */
+    /* SDL_GetCurrentDisplayMode(0, &displayMode); */
+    /* SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP); */
+    /* SDL_RenderSetLogicalSize(m_renderer, static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight)); */
 
     m_registry = std::make_shared<Registry>();
     m_assetStore = std::make_unique<AssetStore>();
@@ -114,11 +116,15 @@ void Game::processInput()
             if (event.key.keysym.sym == SDLK_ESCAPE)
                 m_isRunning = false;
 
-            if (event.key.keysym.sym == SDLK_d)
-                m_isDebugging = !m_isDebugging;
+            /* if (event.key.keysym.sym == SDLK_d) */
+            /*     m_isDebugging = !m_isDebugging; */
 
             m_eventBus->EmitEvent<KeyPressEvent>(event.key.keysym.sym);
 
+            break;
+
+        case SDL_KEYUP:
+            m_eventBus->EmitEvent<KeyReleaseEvent>(event.key.keysym.sym);
             break;
         }
     }
@@ -161,6 +167,8 @@ void Game::loadLevel(uint8_t level)
     m_registry->addComponent<SpriteComponent>(chopper, "chopper-spritesheet", 32, 32, 3);
     m_registry->addComponent<AnimationComponent>(chopper, 2, 16, true);
     m_registry->addComponent<BoxColliderComponent>(chopper, 32, 32);
+    m_registry->addComponent<KeyboardControlledComponent>(chopper, glm::vec2(0, -80), glm::vec2(80, 0),
+                                                          glm::vec2(0, 80), glm::vec2(-80, 0));
 
     Entity tank = m_registry->createEntity();
     m_registry->addComponent<TransformComponent>(tank, glm::vec2(400.0, 40.0), glm::vec2(1.0, 1.0), 0.0);
@@ -174,7 +182,7 @@ void Game::loadLevel(uint8_t level)
     m_registry->addComponent<SpriteComponent>(truck, "truck-image-left", 32, 32, 2);
     m_registry->addComponent<BoxColliderComponent>(truck, 32, 32);
 
-    m_registry->destroyEntity(chopper);
+    m_registry->destroyEntity(radar);
 }
 
 void Game::setup()

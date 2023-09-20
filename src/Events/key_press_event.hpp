@@ -1,5 +1,5 @@
-#ifndef _KEYPRESS_EVENT_H
-#define _KEYPRESS_EVENT_H
+#ifndef _KEY_PRESS_EVENT_H
+#define _KEY_PRESS_EVENT_H
 
 #include "core/events/event.hpp"
 #include <SDL2/SDL_keycode.h>
