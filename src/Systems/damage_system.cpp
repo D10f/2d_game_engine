@@ -2,9 +2,8 @@
 #include "Components/box_collider.hpp"
 #include "Events/collision_event.hpp"
 #include "Logger/Logger.hpp"
-#include "core/ecs/entity.hpp"
+#include "core/ecs/registry.hpp"
 #include "core/events/event_bus.hpp"
-#include <utility>
 
 DamageSystem::DamageSystem()
 {

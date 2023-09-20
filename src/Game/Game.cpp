@@ -4,11 +4,13 @@
 #include "Components/rigid_body.hpp"
 #include "Components/sprite_component.hpp"
 #include "Components/transform_component.hpp"
+#include "Events/keypress_event.hpp"
 #include "Logger/Logger.hpp"
 #include "Systems/animation_system.hpp"
 #include "Systems/collision_system.hpp"
 #include "Systems/damage_system.hpp"
 #include "Systems/debug_system.hpp"
+#include "Systems/keyboard_system.hpp"
 #include "Systems/movement_system.hpp"
 #include "Systems/render_system.hpp"
 #include "core/assets/asset_store.h"
@@ -62,10 +64,10 @@ Game::Game()
 
     // We can also force fullscreen window but scaling down the dimensions to a set width and height.
     // For that use a combination of SDL_SetWindowFullscreen and SDL_RenderSetLogicalSize.
-    /* SDL_DisplayMode displayMode; */
-    /* SDL_GetCurrentDisplayMode(0, &displayMode); */
-    /* SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP); */
-    /* SDL_RenderSetLogicalSize(m_renderer, static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight)); */
+    SDL_DisplayMode displayMode;
+    SDL_GetCurrentDisplayMode(0, &displayMode);
+    SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    SDL_RenderSetLogicalSize(m_renderer, static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight));
 
     m_registry = std::make_shared<Registry>();
     m_assetStore = std::make_unique<AssetStore>();
@@ -114,6 +116,9 @@ void Game::processInput()
 
             if (event.key.keysym.sym == SDLK_d)
                 m_isDebugging = !m_isDebugging;
+
+            m_eventBus->EmitEvent<KeyPressEvent>(event.key.keysym.sym);
+
             break;
         }
     }
@@ -127,9 +132,11 @@ void Game::loadLevel(uint8_t level)
     m_registry->addSystem<AnimationSystem>();
     m_registry->addSystem<CollisionSystem>();
     m_registry->addSystem<DamageSystem>();
+    m_registry->addSystem<KeyboardMovementSystem>();
 
     // Subscribe to events, see comments on update fn below
     m_registry->getSystem<DamageSystem>().subscribeToEvents(m_eventBus);
+    m_registry->getSystem<KeyboardMovementSystem>().subscribeToEvents(m_eventBus);
 
     // Add some assets
     m_assetStore->addTexture(m_renderer, "radar", "./assets/images/radar.png");
