@@ -14,7 +14,7 @@ class RenderSystem : public System
   public:
     RenderSystem();
 
-    void update(SDL_Renderer *renderer, std::unique_ptr<AssetStore> &assetStore);
+    void update(SDL_Renderer *renderer, std::unique_ptr<AssetStore> &assetStore, SDL_Rect *camera);
     void render(SDL_Renderer *renderer, SDL_Texture *texture, TransformComponent &transform, SpriteComponent &sprite);
 };
 

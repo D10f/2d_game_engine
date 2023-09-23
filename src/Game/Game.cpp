@@ -1,6 +1,7 @@
 #include "Game/Game.hpp"
 #include "Components/animation_component.hpp"
 #include "Components/box_collider.hpp"
+#include "Components/camera_follow_component.hpp"
 #include "Components/keyboard_controlled_component.hpp"
 #include "Components/rigid_body.hpp"
 #include "Components/sprite_component.hpp"
@@ -9,6 +10,7 @@
 #include "Events/key_release_event.hpp"
 #include "Logger/Logger.hpp"
 #include "Systems/animation_system.hpp"
+#include "Systems/camera_movement_system.hpp"
 #include "Systems/collision_system.hpp"
 #include "Systems/damage_system.hpp"
 #include "Systems/debug_system.hpp"
@@ -28,9 +30,10 @@
 #include <iostream>
 #include <memory>
 
-Game::Game()
-    : m_isRunning(false), m_isDebugging(false), m_window(nullptr), m_renderer(nullptr), m_windowWidth(960),
-      m_windowHeight(540), m_ticksLastFrame(0)
+size_t Game::m_windowWidth = 960;
+size_t Game::m_windowHeight = 540;
+
+Game::Game() : m_isRunning(false), m_isDebugging(true), m_window(nullptr), m_renderer(nullptr), m_ticksLastFrame(0)
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -74,6 +77,10 @@ Game::Game()
     m_registry = std::make_shared<Registry>();
     m_assetStore = std::make_unique<AssetStore>();
     m_eventBus = std::make_unique<EventBus>();
+    m_camera.x = 0;
+    m_camera.y = 0;
+    m_camera.w = static_cast<int>(m_windowWidth);
+    m_camera.h = static_cast<int>(m_windowHeight);
 
     setup();
 }
@@ -139,6 +146,7 @@ void Game::loadLevel(uint8_t level)
     m_registry->addSystem<CollisionSystem>();
     m_registry->addSystem<DamageSystem>();
     m_registry->addSystem<KeyboardMovementSystem>();
+    m_registry->addSystem<CameraFollowSystem>();
 
     // Subscribe to events, see comments on update fn below
     m_registry->getSystem<DamageSystem>().subscribeToEvents(m_eventBus);
@@ -167,8 +175,9 @@ void Game::loadLevel(uint8_t level)
     m_registry->addComponent<SpriteComponent>(chopper, "chopper-spritesheet", 32, 32, 3);
     m_registry->addComponent<AnimationComponent>(chopper, 2, 16, true);
     m_registry->addComponent<BoxColliderComponent>(chopper, 32, 32);
-    m_registry->addComponent<KeyboardControlledComponent>(chopper, glm::vec2(0, -80), glm::vec2(80, 0),
-                                                          glm::vec2(0, 80), glm::vec2(-80, 0));
+    m_registry->addComponent<KeyboardControlledComponent>(chopper, glm::vec2(0, -200), glm::vec2(200, 0),
+                                                          glm::vec2(0, 200), glm::vec2(-200, 0));
+    m_registry->addComponent<CameraFollowComponent>(chopper);
 
     Entity tank = m_registry->createEntity();
     m_registry->addComponent<TransformComponent>(tank, glm::vec2(400.0, 40.0), glm::vec2(1.0, 1.0), 0.0);
@@ -177,7 +186,7 @@ void Game::loadLevel(uint8_t level)
     m_registry->addComponent<BoxColliderComponent>(tank, 32, 32);
 
     Entity truck = m_registry->createEntity();
-    m_registry->addComponent<TransformComponent>(truck, glm::vec2(600.0, 40.0), glm::vec2(1.0, 1.0), 0.0);
+    m_registry->addComponent<TransformComponent>(truck, glm::vec2(600.0, 80.0), glm::vec2(1.0, 1.0), 0.0);
     m_registry->addComponent<RigidBodyComponent>(truck, glm::vec2(-40.0, 0.0));
     m_registry->addComponent<SpriteComponent>(truck, "truck-image-left", 32, 32, 2);
     m_registry->addComponent<BoxColliderComponent>(truck, 32, 32);
@@ -223,6 +232,7 @@ void Game::update()
     m_registry->update();
 
     // Call systems that need update
+    m_registry->getSystem<CameraFollowSystem>().update(m_camera);
     m_registry->getSystem<MovementSystem>().update(deltaTime);
     m_registry->getSystem<AnimationSystem>().update(deltaTime);
     m_registry->getSystem<CollisionSystem>().update(m_eventBus);
@@ -241,7 +251,7 @@ void Game::render()
     /* SDL_DestroyTexture(texture); */
 
     // Update all systems that need rendering
-    m_registry->getSystem<RenderSystem>().update(m_renderer, m_assetStore);
+    m_registry->getSystem<RenderSystem>().update(m_renderer, m_assetStore, &m_camera);
     if (m_isDebugging)
         m_registry->getSystem<DebugSystem>().update(m_renderer);
 

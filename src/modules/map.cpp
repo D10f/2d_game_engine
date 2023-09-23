@@ -9,19 +9,22 @@
 #include <fstream>
 #include <utility>
 
+size_t Map::m_width = 0;
+size_t Map::m_height = 0;
+
 Map::Map(std::shared_ptr<Registry> registry, std::string textureId, uint32_t tileSize, double scale)
     : m_registry(std::move(registry)), m_mapTexture(std::move(textureId)), m_tileSize(tileSize), m_scale(scale)
 {
 }
 
-void Map::loadMap(const std::string &filePath, size_t tilesX, size_t tilesY)
+void Map::loadMap(const std::string &filePath, size_t cols, size_t rows)
 {
     std::fstream tilemap;
     tilemap.open(filePath);
 
-    for (size_t y = 0; y < tilesY; ++y)
+    for (size_t y = 0; y < rows; ++y)
     {
-        for (size_t x = 0; x < tilesX; ++x)
+        for (size_t x = 0; x < cols; ++x)
         {
             char c = 0;
 
@@ -41,6 +44,9 @@ void Map::loadMap(const std::string &filePath, size_t tilesX, size_t tilesY)
                                                       srcRectY);
         }
     }
+
+    Map::m_width = cols * m_tileSize * m_scale;
+    Map::m_height = rows * m_tileSize * m_scale;
 
     tilemap.close();
 }

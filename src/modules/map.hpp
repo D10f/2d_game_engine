@@ -18,10 +18,10 @@ class Map
 
     uint32_t m_tileSize;
     uint32_t m_scale;
-    uint32_t m_width;
-    uint32_t m_height;
+    static size_t m_width;
+    static size_t m_height;
 
-    void loadMap(const std::string &filePath, size_t width, size_t height);
+    void loadMap(const std::string &filePath, size_t cols, size_t rows);
 };
 
 #endif

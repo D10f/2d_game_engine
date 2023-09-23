@@ -23,7 +23,7 @@ bool sortByLayerIdx(RenderObj &a, RenderObj &b)
     return a.sprite->m_zIndex < b.sprite->m_zIndex;
 }
 
-void RenderSystem::update(SDL_Renderer *renderer, std::unique_ptr<AssetStore> &assetStore)
+void RenderSystem::update(SDL_Renderer *renderer, std::unique_ptr<AssetStore> &assetStore, SDL_Rect *camera)
 {
     std::vector<RenderObj> deferredEntities;
 
@@ -39,6 +39,10 @@ void RenderSystem::update(SDL_Renderer *renderer, std::unique_ptr<AssetStore> &a
             continue;
         }
 
+        // Adjust transform component by camera position
+        transform.m_position.x -= static_cast<float>(camera->x);
+        transform.m_position.y -= static_cast<float>(camera->y);
+
         auto *texture = assetStore->getTexture(sprite.m_textureId);
         render(renderer, texture, transform, sprite);
     }
@@ -47,6 +51,10 @@ void RenderSystem::update(SDL_Renderer *renderer, std::unique_ptr<AssetStore> &a
 
     for (const auto &obj : deferredEntities)
     {
+        // Adjust transform component by camera position
+        obj.transform->m_position.x -= static_cast<float>(camera->x);
+        obj.transform->m_position.y -= static_cast<float>(camera->y);
+
         auto *texture = assetStore->getTexture(obj.sprite->m_textureId);
         render(renderer, texture, *obj.transform, *obj.sprite);
     }

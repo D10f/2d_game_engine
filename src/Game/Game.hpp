@@ -18,13 +18,16 @@ class Game
     int32_t m_ticksLastFrame;
     SDL_Window *m_window;
     SDL_Renderer *m_renderer;
+    SDL_Rect m_camera;
     std::shared_ptr<Registry> m_registry;
     std::unique_ptr<AssetStore> m_assetStore;
     std::unique_ptr<EventBus> m_eventBus;
 
   public:
-    size_t m_windowWidth;
-    size_t m_windowHeight;
+    static size_t m_windowWidth;
+    static size_t m_windowHeight;
+    static size_t m_mapWidth;
+    static size_t m_mapHeight;
 
     Game();
 
